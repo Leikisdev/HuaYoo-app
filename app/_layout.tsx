@@ -1,12 +1,19 @@
-import { Stack } from "expo-router";
-import { useAuth } from "../contexts/AuthContext";
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { ActivityIndicator, View } from "react-native";
 
-export default function Layout() {
+import LoginScreen from './login';
+import HomeScreen from './index';
+
+const Stack = createStackNavigator();
+
+function RootNavigator() {
   const { user, loading } = useAuth();
 
+  console.log('RootNavigator: Auth state', { user: !!user, loading });
+
   if (loading) {
-    // Optional loading screen while Firebase checks session
     return (
       <View style={{
         flex: 1,
@@ -19,19 +26,20 @@ export default function Layout() {
   }
 
   return (
-    <Stack>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!user ? (
-        // If not authenticated → force user to login
-        <Stack.Screen
-          name="login"
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="Login" component={LoginScreen} />
       ) : (
-        <>
-          <Stack.Screen name="home" options={{ title: "Home" }} />
-          <Stack.Screen name="profile" options={{ title: "Profile" }} />
-        </>
+        <Stack.Screen name="Home" component={HomeScreen} />
       )}
-    </Stack>
+    </Stack.Navigator>
+  );
+}
+
+export default function Layout() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
   );
 }
