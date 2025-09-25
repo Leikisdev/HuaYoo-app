@@ -1,11 +1,14 @@
 import { View, Text, Button, TextInput, Alert, StyleSheet } from "react-native";
 import { useState } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "../utils/firebaseAuth";
+import { signInWithEmailAndPassword } from "../../services/auth/firebase";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -40,42 +43,6 @@ export default function LoginScreen() {
     }
   };
 
-  const handleSignUp = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password");
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters long");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await createUserWithEmailAndPassword(email, password);
-      console.log("Account created successfully!");
-    } catch (err: any) {
-      console.log("Sign up error:", err);
-      
-      let errorMessage = "Account creation failed. Please try again.";
-      
-      if (err.code === 'auth/email-already-in-use') {
-        errorMessage = "An account with this email already exists.";
-      } else if (err.code === 'auth/invalid-email') {
-        errorMessage = "Invalid email address.";
-      } else if (err.code === 'auth/weak-password') {
-        errorMessage = "Password is too weak. Please choose a stronger password.";
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      Alert.alert("Sign Up Error", errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome</Text>
@@ -99,21 +66,10 @@ export default function LoginScreen() {
         editable={!isLoading}
       />
       
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isLoading ? "Signing In..." : "Sign In"}
-          onPress={handleLogin}
-          disabled={isLoading}
-        />
-      </View>
-      
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isLoading ? "Creating Account..." : "Create Account"}
-          onPress={handleSignUp}
-          disabled={isLoading}
-        />
-      </View>
+      <Button title="Login" onPress={handleLogin} />
+
+      <Text style={{ marginTop: 20 }}>Don’t have an account?</Text>
+      <Button title="Go to Signup" onPress={() => router.push("/(auth)/signup")} />
     </View>
   );
 }
@@ -139,9 +95,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 15,
     fontSize: 16,
-  },
-  buttonContainer: {
-    width: "100%",
-    marginBottom: 10,
   },
 });

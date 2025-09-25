@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 let auth: any;
 let signInWithEmailAndPassword: (email: string, password: string) => Promise<any>;
 let createUserWithEmailAndPassword: (email: string, password: string) => Promise<any>;
+let updateProfile: (currentUser: any, args: { displayName: string }) => Promise<any>;
 let signOut: () => Promise<void>;
 let onAuthStateChanged: (callback: (user: any) => void) => (() => void);
 
@@ -16,6 +17,7 @@ if (Platform.OS === "web" || process.env.EXPO_PUBLIC_ENV === "development") {
     createUserWithEmailAndPassword: webCreateUser,
     signOut: webSignOut,
     onAuthStateChanged: webOnAuthStateChanged,
+    updateProfile: webUpdateProfile,
   } = require("firebase/auth");
 
   const firebaseConfig = {
@@ -36,6 +38,8 @@ if (Platform.OS === "web" || process.env.EXPO_PUBLIC_ENV === "development") {
   createUserWithEmailAndPassword = (email, password) =>
     webCreateUser(auth, email, password);
   signOut = () => webSignOut(auth);
+  updateProfile = (user, args) =>
+    webUpdateProfile(user, args);
   onAuthStateChanged = (callback) => webOnAuthStateChanged(auth, callback);
 } else {
   // --- Native SDK ---
@@ -48,7 +52,9 @@ if (Platform.OS === "web" || process.env.EXPO_PUBLIC_ENV === "development") {
   createUserWithEmailAndPassword = (email, password) =>
     auth.createUserWithEmailAndPassword(email, password);
   signOut = () => auth.signOut();
+  updateProfile = (currentUser, args) => 
+    auth.currentUser.updateProfile(args);
   onAuthStateChanged = (callback) => auth.onAuthStateChanged(callback);
 }
 
-export { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged };
+export { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile };

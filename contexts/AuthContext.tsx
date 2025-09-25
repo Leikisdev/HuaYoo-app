@@ -5,7 +5,7 @@ import React, {
     useContext,
     ReactNode,
   } from "react";
-import { onAuthStateChanged } from "@/utils/firebaseAuth";
+import { onAuthStateChanged } from "@/services/auth/firebase";
   
 type AuthContextType = {
   user: any | null;
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     console.log('AuthProvider: Setting up auth listener');
     const subscriber = onAuthStateChanged((currentUser: any | null) => {
-      console.log('AuthProvider: Auth state changed', { currentUser: !!currentUser });
+      console.log('AuthProvider: Auth state changed', { currentUser: currentUser });
       setUser(currentUser);
       setLoading(false);
     });

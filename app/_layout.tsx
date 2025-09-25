@@ -1,17 +1,11 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+// app/_layout.tsx
+import { Stack } from "expo-router";
+import { useState, useEffect } from "react";
+import { View, ActivityIndicator } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
-import { ActivityIndicator, View } from "react-native";
-
-import LoginScreen from './login';
-import HomeScreen from './index';
-
-const Stack = createStackNavigator();
 
 function RootNavigator() {
   const { user, loading } = useAuth();
-
-  console.log('RootNavigator: Auth state', { user: !!user, loading });
 
   if (loading) {
     return (
@@ -26,20 +20,22 @@ function RootNavigator() {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {!user ? (
-        <Stack.Screen name="Login" component={LoginScreen} />
-      ) : (
-        <Stack.Screen name="Home" component={HomeScreen} />
-      )}
-    </Stack.Navigator>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!!user}>
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!user}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+    </Stack>
   );
 }
 
-export default function Layout() {
-  return (
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
-  );
-}
+export default function RootLayout() {
+    return (
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
+    );
+  }
