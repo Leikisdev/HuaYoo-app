@@ -1,19 +1,19 @@
 import { View, Text, Button, TextInput, Alert, StyleSheet } from "react-native";
 import { useState } from "react";
-import { createUserWithEmailAndPassword, auth, updateProfile } from "../../services/auth/firebase";
+import { createUserWithEmailAndPassword, auth, updateProfile } from "@/services/auth/firebase";
 import { useRouter } from "expo-router";
 import { createUser } from "@/services/api/orchestrator";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState("");
-  const [nickname, setNickname] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
 	const router = useRouter();
 
   const handleSignUp = async () => {
-    if (!email || !password || !nickname) {
+    if (!email || !password || !displayName) {
       Alert.alert("Error", "Please enter email, password and nick name");
       return;
     }
@@ -29,14 +29,13 @@ export default function SignupScreen() {
       await createUserWithEmailAndPassword(email, password);
       // Set user nickname
       await updateProfile(auth.currentUser, {
-        displayName: nickname
+        displayName: displayName
       });
 
       console.log("Account created successfully!");
-      await createUser({ email: email, nickname: nickname});
+      await createUser({ email: email, displayName: displayName});
     } catch (err: any) {
       console.log("Sign up error:", err);
-      
       let errorMessage = "Account creation failed. Please try again.";
       
       if (err.code === 'auth/email-already-in-use') {
@@ -70,8 +69,8 @@ export default function SignupScreen() {
       <TextInput
         style={styles.input}
         placeholder="Nickname"
-        value={nickname}
-        onChangeText={setNickname}
+        value={displayName}
+        onChangeText={setDisplayName}
         autoCapitalize="none"
         editable={!isLoading}
       />

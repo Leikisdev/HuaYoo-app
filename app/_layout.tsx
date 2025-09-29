@@ -1,6 +1,4 @@
-// app/_layout.tsx
 import { Stack } from "expo-router";
-import { useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
