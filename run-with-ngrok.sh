@@ -1,5 +1,4 @@
 #!/bin/bash
-# Start ngrok in the background, forwarding to port 8080 (adjust as needed)
 ngrok http 8000 > /dev/null &
 
 # Give ngrok a moment to start and establish the tunnel
